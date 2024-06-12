@@ -23,6 +23,17 @@
 </head>
 <body>
     <h1>Страница учителя</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
     {% for class_id, class_info in classes.items() %}
         <h2>Класс: {{ class_info.class.name }}</h2>
         {% for subject in class_info.subjects %}
@@ -46,6 +57,24 @@
             </table>
         {% endfor %}
     {% endfor %}
+    
+    <h3>Домашние задания</h3>
+    <table>
+        <tr>
+            <th>Предмет</th>
+            <th>Домашнее задание</th>
+        </tr>
+        {% for subject in subjects %}
+            {% set homework_list = homeworks[subject.id] %}
+            {% for hw in homework_list %}
+                <tr>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ hw.description }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+
     <h2>Назначить оценки и домашние задания</h2>
     <form action="/assign_grade" method="POST">
         <select name="student_id" required>

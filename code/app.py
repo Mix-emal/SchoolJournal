@@ -74,7 +74,7 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         else:
-            flash('Неверное имя пользователя или пароль')
+            flash('Неверное имя пользователя или пароль', 'error')
     return render_template('login.html')
 
 @app.route('/logout')
@@ -107,6 +107,7 @@ def teacher_page():
     
     classes = {}
     student_grades = {}
+    homeworks = {}
     
     for subject in subjects:
         if subject.class_id not in classes:
@@ -123,10 +124,14 @@ def teacher_page():
             grades = Grade.query.filter_by(student_id=student.id, subject_id=subject.id).all()
             student_grades[student.id][subject.id] = grades
             print(f"Grades for student {student.id} in subject {subject.id}: {[grade.grade for grade in grades]}")
+
+        # Collect homeworks for each subject
+        homework = Homework.query.filter_by(subject_id=subject.id).all()
+        homeworks[subject.id] = homework
     
     students = Student.query.all()
     
-    return render_template('teacher.html', teacher=teacher, classes=classes, student_grades=student_grades, students=students, subjects=subjects)
+    return render_template('teacher.html', teacher=teacher, classes=classes, student_grades=student_grades, students=students, subjects=subjects, homeworks=homeworks)
 
 @app.route('/student')
 @login_required
@@ -240,7 +245,7 @@ def assign_grade():
     try:
         grade_value = int(grade_value)
     except ValueError:
-        flash('Оценка должна быть целым числом')
+        flash('Оценка должна быть целым числом', 'error')
         return redirect(url_for('teacher_page'))
 
     grade = Grade(grade=grade_value, student_id=student_id, subject_id=subject_id)
@@ -269,11 +274,11 @@ def init_db():
         db.session.add(director)
     
     if not Teacher.query.filter_by(username='teacher').first():
-        teacher = Teacher(username='teacher', role='Teacher', last_name='TeacherLast', first_name='TeacherFirst', middle_name='TeacherMiddle')
+        teacher = Teacher(username='teacher', role='Teacher', last_name='Петрова', first_name='Алина', middle_name='Ивановна')
         db.session.add(teacher)
     
     if not Student.query.filter_by(username='student').first():
-        student = Student(username='student', role='Student', last_name='StudentLast', first_name='StudentFirst', middle_name='StudentMiddle')
+        student = Student(username='student', role='Student', last_name='Иванов', first_name='Иван', middle_name='Иванович')
         db.session.add(student)
     
     if not User.query.filter_by(username='parent').first():
@@ -286,9 +291,9 @@ def init_db():
     student = Student.query.filter_by(username='student').first()
     teacher = Teacher.query.filter_by(username='teacher').first()
 
-    school_class = Class.query.filter_by(name='Class 1A').first()
+    school_class = Class.query.filter_by(name='1А').first()
     if not school_class:
-        school_class = Class(name='Class 1A')
+        school_class = Class(name='1А')
         db.session.add(school_class)
         db.session.commit()
 
@@ -297,20 +302,20 @@ def init_db():
         db.session.commit()
 
     # Создание предмета и назначение учителя
-    if not Subject.query.filter_by(name='Math', class_id=school_class.id).first():
-        subject = Subject(name='Math', class_id=school_class.id, teacher_id=teacher.id)
+    if not Subject.query.filter_by(name='Математика', class_id=school_class.id).first():
+        subject = Subject(name='Математика', class_id=school_class.id, teacher_id=teacher.id)
         db.session.add(subject)
         db.session.commit()
 
     # Назначение оценки и домашнего задания
-    subject = Subject.query.filter_by(name='Math', class_id=school_class.id).first()
+    subject = Subject.query.filter_by(name='Математика', class_id=school_class.id).first()
     if subject:
         if not Grade.query.filter_by(student_id=student.id, subject_id=subject.id).first():
             grade = Grade(grade=5, student_id=student.id, subject_id=subject.id)
             db.session.add(grade)
         
-        if not Homework.query.filter_by(description='Math homework', subject_id=subject.id).first():
-            homework = Homework(description='Math homework', subject_id=subject.id)
+        if not Homework.query.filter_by(description='упражнение 1, стр.1', subject_id=subject.id).first():
+            homework = Homework(description='упражнение 1, стр.1', subject_id=subject.id)
             db.session.add(homework)
     
     db.session.commit()
