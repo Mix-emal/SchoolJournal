@@ -7,15 +7,18 @@
 </head>
 <body>
     <h1>Страница директора</h1>
+    <h2>Добавление информации о классах</h2>
+    <h4>Новый учитель</h4>
     <form action="/add_teacher" method="POST">
-        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="text" name="username" placeholder="Логин пользователя" required>
         <input type="text" name="last_name" placeholder="Фамилия" required>
         <input type="text" name="first_name" placeholder="Имя" required>
         <input type="text" name="middle_name" placeholder="Отчество" required>
         <button type="submit">Добавить учителя</button>
     </form>
+    <h4>Новый ученик</h4>
     <form action="/add_student" method="POST">
-        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="text" name="username" placeholder="Логин пользователя" required>
         <input type="text" name="last_name" placeholder="Фамилия" required>
         <input type="text" name="first_name" placeholder="Имя" required>
         <input type="text" name="middle_name" placeholder="Отчество" required>
@@ -26,10 +29,12 @@
         </select>
         <button type="submit">Добавить ученика</button>
     </form>
+    <h4>Добавление нового класса</h4>
     <form action="/add_class" method="POST">
         <input type="text" name="class" placeholder="Название класса" required>
         <button type="submit">Добавить класс</button>
     </form>
+    <h4>Добавление предмета для класса</h4>
     <form action="/add_subject" method="POST">
         <input type="text" name="name" placeholder="Название предмета" required>
         <select name="class_id">
@@ -44,7 +49,7 @@
         </select>
         <button type="submit">Добавить предмет</button>
     </form>
-    <h2>Выбор класса</h2>
+    <h2>Просмотр информации о классе</h2>
     <form method="GET" action="{{ url_for('director_page') }}">
         <select name="class_id">
             {% for class in classes %}
