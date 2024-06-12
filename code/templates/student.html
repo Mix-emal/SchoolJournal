@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница ученика</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Страница ученика</h1>
+    <h2>{{ student.last_name }} {{ student.first_name }} {{ student.middle_name }}</h2>
+    
+    <h3>Предметы и оценки</h3>
+    <table>
+        <tr>
+            <th>Предмет</th>
+            <th>Оценки</th>
+        </tr>
+        {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.name }}</td>
+                <td>
+                    {% set grades = student_grades[subject.id] %}
+                    {% for grade in grades %}
+                        {{ grade.grade }}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    
+    <h3>Домашние задания</h3>
+    <table>
+        <tr>
+            <th>Предмет</th>
+            <th>Домашнее задание</th>
+        </tr>
+        {% for subject in subjects %}
+            {% set homework_list = homeworks[subject.id] %}
+            {% for hw in homework_list %}
+                <tr>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ hw.description }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+    
+    <a href="{{ url_for('index') }}">Назад на главную</a>
+</body>
+</html>

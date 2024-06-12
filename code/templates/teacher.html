@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница учителя</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Страница учителя</h1>
+    {% for class_id, class_info in classes.items() %}
+        <h2>Класс: {{ class_info.class.name }}</h2>
+        {% for subject in class_info.subjects %}
+            <h3>Предмет: {{ subject.name }}</h3>
+            <table>
+                <tr>
+                    <th>Имя ученика</th>
+                    <th>Оценки</th>
+                </tr>
+                {% for student in class_info.class.students %}
+                    <tr>
+                        <td>{{ student.last_name }} {{ student.first_name }} {{ student.middle_name }}</td>
+                        <td>
+                            {% set grades = student_grades[student.id][subject.id] %}
+                            {% for grade in grades %}
+                                {{ grade.grade }} 
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    {% endfor %}
+    <h2>Назначить оценки и домашние задания</h2>
+    <form action="/assign_grade" method="POST">
+        <select name="student_id" required>
+            <option value="" disabled selected>Выберите ученика</option>
+            {% for student in students %}
+                <option value="{{ student.id }}">{{ student.last_name }} {{ student.first_name }} {{ student.middle_name }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="grade" placeholder="Оценка" required>
+        <select name="subject_id" required>
+            <option value="" disabled selected>Выберите предмет</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Назначить оценку</button>
+    </form>
+    <form action="/assign_homework" method="POST">
+        <select name="subject_id" required>
+            <option value="" disabled selected>Выберите предмет</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="homework" placeholder="Описание домашнего задания" required>
+        <button type="submit">Назначить домашнее задание</button>
+    </form>
+    <a href="{{ url_for('index') }}">Назад на главную</a>
+</body>
+</html>

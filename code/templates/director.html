@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница директора</title>
+</head>
+<body>
+    <h1>Страница директора</h1>
+    <form action="/add_teacher" method="POST">
+        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="text" name="last_name" placeholder="Фамилия" required>
+        <input type="text" name="first_name" placeholder="Имя" required>
+        <input type="text" name="middle_name" placeholder="Отчество" required>
+        <button type="submit">Добавить учителя</button>
+    </form>
+    <form action="/add_student" method="POST">
+        <input type="text" name="username" placeholder="Имя пользователя" required>
+        <input type="text" name="last_name" placeholder="Фамилия" required>
+        <input type="text" name="first_name" placeholder="Имя" required>
+        <input type="text" name="middle_name" placeholder="Отчество" required>
+        <select name="class">
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Добавить ученика</button>
+    </form>
+    <form action="/add_class" method="POST">
+        <input type="text" name="class" placeholder="Название класса" required>
+        <button type="submit">Добавить класс</button>
+    </form>
+    <form action="/add_subject" method="POST">
+        <input type="text" name="name" placeholder="Название предмета" required>
+        <select name="class_id">
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="teacher_id">
+            {% for teacher in teachers %}
+                <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.middle_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Добавить предмет</button>
+    </form>
+    <h2>Выбор класса</h2>
+    <form method="GET" action="{{ url_for('director_page') }}">
+        <select name="class_id">
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Просмотр</button>
+    </form>
+    {% if class_info %}
+        <h2>Класс: {{ class_info.name }}</h2>
+        <h3>Ученики:</h3>
+        <ul>
+            {% for student in class_info.students %}
+                <li>{{ student.last_name }} {{ student.first_name }} {{ student.middle_name }}</li>
+            {% endfor %}
+        </ul>
+        <h3>Предметы:</h3>
+        <ul>
+            {% for subject in class_info.subjects %}
+                <li>{{ subject.name }} (Учитель: {{ subject.teacher.last_name }} {{ subject.teacher.first_name }} {{ subject.teacher.middle_name }})</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <a href="{{ url_for('index') }}">Назад на главную</a>
+</body>
+</html>
